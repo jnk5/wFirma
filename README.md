@@ -31,10 +31,11 @@ The current version of the package provides full support for the following modul
  * [vat_contents](https://doc.wfirma.pl/#h3-vat-contents)
  * [vat_codes](https://doc.wfirma.pl/#h3-vat-codes)
  * [vat_moss_details](https://doc.wfirma.pl/#h3-vat-moss-details)
-
+ 
 Basic support for the following modules:
 
  * [taxregisters](https://doc.wfirma.pl/#030217b9-8adf-489e-86d4-ed3f50249dac) ([details](#taxregistersapi))
+ * [expenses](https://doc.wfirma.pl/#7ba17d49-5ebc-4bef-adaa-e2256fe1c7ed) ([details](#expensesapi))
 
 ### Configure Annotation Registry
 
@@ -110,6 +111,7 @@ Every main module has it's own instance of the API exposing supported methods.
 * **TranslationLanguages**: find, findAll, get, count
 * **VatCodes**: find, findAll, get, count
 * **TaxRegisters**: get
+* **Expenses**: find, get
 
 ### Find / FindAll / Count APIs
 
@@ -265,6 +267,32 @@ $taxRegisterId = new TaxRegistersId(2024);
 // get tax registers
 /** @var \Webit\WFirmaSDK\TaxRegisters\TaxRegister[] $taxRegisters */
 $taxRegisters = $taxRegisterApi->get($taxRegisterId);
+
+```
+
+### ExpensesApi
+
+```php
+
+<?php
+
+$entityApiFactory = new EntityApiFactory();
+$entityApi = $entityApiFactory->create($auth);
+$apiFactory = new ModuleApiFactory($entityApi);
+$expenseApi = $apiFactory->expensesApi();
+
+$parameters = Parameters::findParameters(
+    Conditions::and(
+        Conditions::ge('date', $start->format('Y-m-d')),
+        Conditions::le('date', $end->format('Y-m-d'))
+    ),
+    Order::ascending('date'),
+    Pagination::create(30, 1)
+);
+try {
+    $expenses = $expenseApi->find($parameters);
+}
+catch (\Throwable $e) {}
 
 ```
 
